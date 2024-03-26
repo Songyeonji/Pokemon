@@ -14,9 +14,10 @@ const Chip = styled.div`
     align-items: center;
     border: 1px solid #c0c0c0;
     border-radius: 16px;
-    font-size: 14px;
+
     font-weight: bold;
     box-shadow: 0.5px 0.5px 0 0 #c0c0c0;
+
 `
 const NumberChip = styled.div`
     padding: 4px 6px;
