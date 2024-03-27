@@ -1,6 +1,7 @@
 import styled from "@emotion/styled";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { PokeImageSkeleton } from "../Common/PokeImageSkeleton";
 import PokeMarkChip from "../Common/PokeMarkChip";
 import { fetchPokemonDetail, PokemonDetailType } from "../Service/pokemonService";
 
@@ -21,7 +22,18 @@ const PokemonDetail = () =>{
     }, [name])
 
     if(!name || !pokemon  ){
-        return null; //todo: name이 없을떄
+        return (
+        <Container>
+            <ImageContainer>
+                <PokeImageSkeleton/>
+            </ImageContainer>
+            <Footer>
+                <PokeMarkChip/>
+            </Footer>
+        </Container>
+     
+             
+        )
     }
  
   

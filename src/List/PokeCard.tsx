@@ -4,6 +4,7 @@ import PokeMarkChip from "../Common/PokeMarkChip";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useEffect,useState } from "react";
 import { fetchPokemonDetail, PokemonDetailType } from "../Service/pokemonService";
+import { PokeImageSkeleton } from "../Common/PokeImageSkeleton";
 
 
 interface PokeCardProps{
@@ -26,10 +27,22 @@ const PokeCard = (props:PokeCardProps) =>{
     
       }, [props.name, pokemon?.id])
 
-      if(!pokemon){
-        return null;   //화면이 로딩중일때 표시
-    }
-
+      if(!pokemon) {
+        return (
+          <Item color={'#32CD32'}>
+            <Header>
+              <PokeNameChip name={'포켓몬'} id={0} color={'#32CD32'} />
+            </Header>
+            <Body>
+              <PokeImageSkeleton/>
+            </Body>
+            <Footer>
+              <PokeMarkChip/>
+            </Footer>
+          </Item>
+        )
+      }
+    
       
     const handleClick = () =>{
         navigate(`/pokemon/${props.name}`);
