@@ -3,17 +3,22 @@ import PokeNameChip from "../Common/PokeNameChip";
 import PokeMarkChip from "../Common/PokeMarkChip";
 import { Navigate, useNavigate } from "react-router-dom";
 const TempImgUrl = 'https://mblogthumb-phinf.pstatic.net/20160817_259/retspe_14714118890125sC2j_PNG/%C7%C7%C4%AB%C3%F2_%281%29.png?type=w800'
-const PokeCard = () =>{
+
+interface PokeCardProps{
+    name: string
+}
+
+const PokeCard = (props:PokeCardProps) =>{
     const navigate = useNavigate();
 
     const handleClick = () =>{
-        navigate(`/pokemon/피카츄`);
+        navigate(`/pokemon/${props.name}`);
     }
 
     return(
         <Item onClick={handleClick}>
             <Header>
-                <PokeNameChip/>
+                <PokeNameChip name={props.name}/>
             </Header>
             <Body>
                 <Image src={TempImgUrl}/>
