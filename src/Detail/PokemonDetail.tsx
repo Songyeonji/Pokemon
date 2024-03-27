@@ -35,8 +35,9 @@ const PokemonDetail = () =>{
              
         )
     }
- 
-  
+
+
+    
     return(
         <Container>
             <ImageContainer>
