@@ -1,13 +1,34 @@
 import styled from "@emotion/styled";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import PokeMarkChip from "../Common/PokeMarkChip";
+import { fetchPokemonDetail, PokemonDetailType } from "../Service/pokemonService";
 
-const TempImgUrl = 'https://mblogthumb-phinf.pstatic.net/20160817_259/retspe_14714118890125sC2j_PNG/%C7%C7%C4%AB%C3%F2_%281%29.png?type=w800'
 
 const PokemonDetail = () =>{
+    const { name } = useParams()
+    const [pokemon, setPokemon] = useState<PokemonDetailType | null>(null)
+  
+    useEffect(() => {
+      if(!name) {
+        return;
+      }
+  
+      (async () => {
+        const detail = await fetchPokemonDetail(name)
+        setPokemon(detail)
+      })()
+    }, [name])
+
+    if(!name || !pokemon  ){
+        return null; //todo: name이 없을떄
+    }
+ 
+  
     return(
         <Container>
             <ImageContainer>
-                <Image src={TempImgUrl}/>
+            <Image src={pokemon.images.officialArtworkFront} alt={pokemon.koreanName}/>
             </ImageContainer>
             <Divider/>
         <Body>
@@ -16,49 +37,37 @@ const PokemonDetail = () =>{
                 <tbody>
                     <TableRow>
                         <TableHeader>번호</TableHeader>
-                        <td>1</td>
+                        <td>{pokemon.id}</td>
                     </TableRow>
                     <TableRow>
                         <TableHeader>이름</TableHeader>
-                        <td>이상해씨</td>
+                        <td>{`${pokemon.koreanName} (${pokemon.name})`}</td>
                     </TableRow>
                     <TableRow>
                         <TableHeader>타입</TableHeader>
-                        <td>이상해씨</td>
+                        <td>{pokemon.type.toString()}</td>
                     </TableRow>
                     <TableRow>
                         <TableHeader>키</TableHeader>
-                        <td>이상해씨</td>
+                        <td>{pokemon.height} m</td>
                     </TableRow>
                     <TableRow>
                         <TableHeader>몸무게</TableHeader>
-                        <td>이상해씨</td>
+                        <td>{pokemon.weight} Kg</td>
                     </TableRow>
                 </tbody>
             </Table>
             <h2>능력치</h2>
             <Table>
                 <tbody>
-                    <TableRow>
-                        <TableHeader>hp</TableHeader>
-                        <td>45</td>
+                {
+                    pokemon.baseStats.map(stat => (
+                    <TableRow key={stat.name}>
+                        <TableHeader>{stat.name}</TableHeader>
+                        <td>{stat.value}</td>
                     </TableRow>
-                    <TableRow>
-                        <TableHeader>attack</TableHeader>
-                        <td>이상해씨</td>
-                    </TableRow>
-                    <TableRow>
-                        <TableHeader>타입</TableHeader>
-                        <td>이상해씨</td>
-                    </TableRow>
-                    <TableRow>
-                        <TableHeader>키</TableHeader>
-                        <td>이상해씨</td>
-                    </TableRow>
-                    <TableRow>
-                        <TableHeader>몸무게</TableHeader>
-                        <td>이상해씨</td>
-                    </TableRow>
+                    ))
+                }
                 </tbody>
             </Table>
         </Body>

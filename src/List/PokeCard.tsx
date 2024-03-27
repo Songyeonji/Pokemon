@@ -4,7 +4,7 @@ import PokeMarkChip from "../Common/PokeMarkChip";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useEffect,useState } from "react";
 import { fetchPokemonDetail, PokemonDetailType } from "../Service/pokemonService";
-const TempImgUrl = 'https://mblogthumb-phinf.pstatic.net/20160817_259/retspe_14714118890125sC2j_PNG/%C7%C7%C4%AB%C3%F2_%281%29.png?type=w800'
+
 
 interface PokeCardProps{
     name: string
@@ -38,9 +38,9 @@ const PokeCard = (props:PokeCardProps) =>{
  
 
     return(
-        <Item onClick={handleClick}>
+        <Item onClick={handleClick} color = {pokemon.color}>
             <Header>
-                <PokeNameChip name={pokemon.name} id={pokemon.id}/>
+                <PokeNameChip name={pokemon.koreanName} color={pokemon.color} id={pokemon.id}/>
             </Header>
             <Body>
                 <Image src={pokemon.images.dreamWorldFront} alt={pokemon.koreanName}/>
@@ -52,7 +52,7 @@ const PokeCard = (props:PokeCardProps) =>{
     )
 }
 
-const Item = styled.li` 
+const Item = styled.li<{ color : string}>` 
     display: flex;
     flex-direction: column;
 
@@ -71,7 +71,7 @@ const Item = styled.li`
     }
 
     &:active{
-        background-color : yellow;
+        background-color :  ${props => props.color};
         opacity: 0.8;
         transition: background-color 0s;
     }
