@@ -78,7 +78,7 @@ interface PokemonSpeciesResponseType {
     language: {
       name: string
       url: string
-    }
+    } 
   }[]
 }
 
