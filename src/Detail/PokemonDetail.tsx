@@ -1,106 +1,102 @@
-import styled from "@emotion/styled";
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { PokeImageSkeleton } from "../Common/PokeImageSkeleton";
+import {useParams} from "react-router-dom";
+import {useEffect} from "react";
 import PokeMarkChip from "../Common/PokeMarkChip";
-import { fetchPokemonDetail, PokemonDetailType } from "../Service/pokemonService";
+import styled from "@emotion/styled";
+import {PokeImageSkeleton} from "../Common/PokeImageSkeleton";
+import {useSelector} from "react-redux";
+import {RootState, useAppDispatch} from "../Store";
+import {fetchPokemonDetail} from "../Store/pokemonDetailSlice";
 
+const PokemonDetail = () => {
+  const { name } = useParams()
+  const imageType = useSelector((state: RootState) => state.imageType.type);
+  const pokemonDetails = useSelector((state: RootState) => state.pokemonDetail.pokemonDetails);
+  const pokemon = name ? pokemonDetails[name] : null
+  const dispatch = useAppDispatch()
 
-const PokemonDetail = () =>{
-    const { name } = useParams()
-    const [pokemon, setPokemon] = useState<PokemonDetailType | null>(null)
-  
-    useEffect(() => {
-      if(!name) {
-        return;
-      }
-  
-      (async () => {
-        const detail = await fetchPokemonDetail(name)
-        setPokemon(detail)
-      })()
-    }, [name])
-
-    if(!name || !pokemon  ){
-        return (
-        <Container>
-            <ImageContainer>
-                <PokeImageSkeleton/>
-            </ImageContainer>
-            <Footer>
-                <PokeMarkChip/>
-            </Footer>
-        </Container>
-     
-             
-        )
+  useEffect(() => {
+    if(!name) {
+      return;
     }
 
+    dispatch(fetchPokemonDetail(name))
+  }, [name, dispatch])
 
-    
-    return(
-        <Container>
-            <ImageContainer>
-            <Image src={pokemon.images.officialArtworkFront} alt={pokemon.koreanName}/>
-            </ImageContainer>
-            <Divider/>
-        <Body>
-            <h2>기본 정보</h2>
-            <Table>
-                <tbody>
-                    <TableRow>
-                        <TableHeader>번호</TableHeader>
-                        <td>{pokemon.id}</td>
-                    </TableRow>
-                    <TableRow>
-                        <TableHeader>이름</TableHeader>
-                        <td>{`${pokemon.koreanName} (${pokemon.name})`}</td>
-                    </TableRow>
-                    <TableRow>
-                        <TableHeader>타입</TableHeader>
-                        <td>{pokemon.type.toString()}</td>
-                    </TableRow>
-                    <TableRow>
-                        <TableHeader>키</TableHeader>
-                        <td>{pokemon.height} m</td>
-                    </TableRow>
-                    <TableRow>
-                        <TableHeader>몸무게</TableHeader>
-                        <td>{pokemon.weight} Kg</td>
-                    </TableRow>
-                </tbody>
-            </Table>
-            <h2>능력치</h2>
-            <Table>
-                <tbody>
-                {
-                    pokemon.baseStats.map(stat => (
-                    <TableRow key={stat.name}>
-                        <TableHeader>{stat.name}</TableHeader>
-                        <td>{stat.value}</td>
-                    </TableRow>
-                    ))
-                }
-                </tbody>
-            </Table>
-        </Body>
+  if(!pokemon) {
+    return (
+      <Container>
+        <ImageContainer>
+          <PokeImageSkeleton/>
+        </ImageContainer>
         <Footer>
-            <PokeMarkChip/>
+          <PokeMarkChip/>
         </Footer>
-       
-        </Container>
-      
+      </Container>
     )
- 
+  }
+
+  return (
+    <Container>
+      <ImageContainer>
+        <a href={pokemon.images[imageType]}>
+          <Image src={pokemon.images[imageType]} alt={pokemon.koreanName}/>
+        </a>
+      </ImageContainer>
+      <Divider/>
+      <Body>
+        <h2>기본 정보</h2>
+        <Table>
+          <tbody>
+            <TableRow>
+              <TableHeader>번호</TableHeader>
+              <td>{pokemon.id}</td>
+            </TableRow>
+            <TableRow>
+              <TableHeader>이름</TableHeader>
+              <td>{`${pokemon.koreanName} (${pokemon.name})`}</td>
+            </TableRow>
+            <TableRow>
+              <TableHeader>타입</TableHeader>
+              <td>{pokemon.type.toString()}</td>
+            </TableRow>
+            <TableRow>
+              <TableHeader>키</TableHeader>
+              <td>{pokemon.height} m</td>
+            </TableRow>
+            <TableRow>
+              <TableHeader>몸무게</TableHeader>
+              <td>{pokemon.weight} Kg</td>
+            </TableRow>
+          </tbody>
+        </Table>
+        <h2>능력치</h2>
+        <Table>
+          <tbody>
+          {
+            pokemon.baseStats.map(stat => (
+              <TableRow key={stat.name}>
+                <TableHeader>{stat.name}</TableHeader>
+                <td>{stat.value}</td>
+              </TableRow>
+            ))
+          }
+          </tbody>
+        </Table>
+      </Body>
+      <Footer>
+        <PokeMarkChip/>
+      </Footer>
+    </Container>
+  )
 }
 
 const Container = styled.section`
-    border: 1px solid #c0c0c0;
-    margin: 16px 32px;
-    border-radius: 16px;
-    box- shadow: 1px 1px 3px 1px #c0c0c0;
-
+  margin: 16px 32px;
+  border: 1px solid #C0C0C0;
+  border-radius: 16px;
+  box-shadow: 1px 1px 3px 1px #C0C0C0;
 `
+
 const ImageContainer = styled.section`
   display: flex;
   flex: 1 1 auto;
@@ -114,6 +110,7 @@ const Image = styled.img`
   width: 350px;
   height: 350px;
 `
+
 const Divider = styled.hr`
   margin: 32px;
   border-style: none;
@@ -156,4 +153,4 @@ const Footer = styled.section`
   margin: 32px 16px;
 `
 
-export default PokemonDetail;
+export default PokemonDetail

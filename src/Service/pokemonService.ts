@@ -1,4 +1,5 @@
 import axios from 'axios';
+import {POKEMON_IMAGE_TYPE} from "../Constants";
 
 const remote = axios.create();
 
@@ -11,7 +12,7 @@ export interface PokemonListResponse {
   }[]
 }
 
-export const fetchPokemons = async (nextUrl?:string) => {
+export const fetchPokemonsAPI = async (nextUrl?:string) => {
   const result = await remote.get<PokemonListResponse>(nextUrl ? nextUrl : 'https://pokeapi.co/api/v2/pokemon', {
     params: {
       limit: 20
@@ -29,6 +30,7 @@ export interface PokemonDetailType {
   color: string
   type: string[]
   images: {
+    frontDefault: string
     officialArtworkFront: string
     dreamWorldFront: string
   },
@@ -51,6 +53,7 @@ interface PokemonDetailResponseType {
     }
   }[],
   sprites: {
+    front_default: string,
     other: {
       'official-artwork': {
         front_default: string,
@@ -78,13 +81,13 @@ interface PokemonSpeciesResponseType {
     language: {
       name: string
       url: string
-    } 
+    }
   }[]
 }
 
-export const fetchPokemonDetail = async (nameOrId:string | number):Promise<PokemonDetailType> => {
-  const response = await remote.get<PokemonDetailResponseType>(`https://pokeapi.co/api/v2/pokemon/${nameOrId}`);
-  const result = await remote.get<PokemonSpeciesResponseType>(`https://pokeapi.co/api/v2/pokemon-species/${nameOrId}`);
+export const fetchPokemonDetailAPI = async (name:string):Promise<PokemonDetailType> => {
+  const response = await remote.get<PokemonDetailResponseType>(`https://pokeapi.co/api/v2/pokemon/${name}`);
+  const result = await remote.get<PokemonSpeciesResponseType>(`https://pokeapi.co/api/v2/pokemon-species/${name}`);
   const { data } = response;
   const data2 = result.data;
 
@@ -98,8 +101,9 @@ export const fetchPokemonDetail = async (nameOrId:string | number):Promise<Pokem
     color: data2.color.name,
     baseStats: data.stats.map(item => ({ name: item.stat.name, value: item.base_stat })),
     images: {
-      officialArtworkFront: data.sprites.other['official-artwork'].front_default,
-      dreamWorldFront: data.sprites.other.dream_world.front_default
+      [POKEMON_IMAGE_TYPE.FRONT_DEFAULT]: data.sprites.front_default,
+      [POKEMON_IMAGE_TYPE.OFFICIAL_ARTWORK]: data.sprites.other['official-artwork'].front_default,
+      [POKEMON_IMAGE_TYPE.DREAM_WORLD]: data.sprites.other.dream_world.front_default
     }
   }
 }

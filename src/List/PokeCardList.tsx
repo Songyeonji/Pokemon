@@ -1,71 +1,66 @@
-import styled from "@emotion/styled";
-import { useEffect, useState} from "react";
-import useInfiniteScroll from "react-infinite-scroll-hook";
-import { fetchPokemons, PokemonListResponse } from "../Service/pokemonService";
 import PokeCard from "./PokeCard";
+import {useEffect } from "react";
+import styled from "@emotion/styled";
+import useInfiniteScroll from "react-infinite-scroll-hook";
+import { useSelector} from "react-redux";
+import {fetchPokemons} from "../Store/pokemonsSlice";
+import { RootState, useAppDispatch} from "../Store";
 
 const PokeCardList = () => {
-    const [pokemons, setPokemons] = useState<PokemonListResponse>({
-        count: 0,
-        next: '',
-        results: []
-      })
-      const [infiniteRef] = useInfiniteScroll({
-        loading: false,
-        hasNextPage: true,
-        onLoadMore: async () => {
-          const result = await fetchPokemons(pokemons.next)
-          setPokemons({
-            ...result,
-            results: [...pokemons.results, ...result.results]
-          })
-        },
-        // When there is an error, we stop infinite loading.
-        // It can be reactivated by setting "error" state as undefined.
-        disabled: false,
-        // `rootMargin` is passed to `IntersectionObserver`.
-        // We can use it to trigger 'onLoadMore' when the sentry comes near to become
-        // visible, instead of becoming fully visible on the screen.
-        rootMargin: '0px 0px 100px 0px',
-      });
-    
-    
-    useEffect(() => {
-        (async () => {
-          const pokemons = await fetchPokemons()
-          setPokemons(pokemons);
-        })()
-      }, [])
-    return (
-        <>
-        <List>
+  const dispatch = useAppDispatch()
+  const { pokemons } = useSelector((state: RootState) => state.pokemons)
+  const [infiniteRef] = useInfiniteScroll({
+    loading: false,
+    hasNextPage: true,
+    onLoadMore: () => {
+      dispatch(fetchPokemons(pokemons.next))
+    },
+    // When there is an error, we stop infinite loading.
+    // It can be reactivated by setting "error" state as undefined.
+    disabled: false,
+    // `rootMargin` is passed to `IntersectionObserver`.
+    // We can use it to trigger 'onLoadMore' when the sentry comes near to become
+    // visible, instead of becoming fully visible on the screen.
+    rootMargin: '0px 0px 100px 0px',
+  });
+
+  useEffect(() => {
+    if(pokemons.results.length > 0) {
+      return;
+    }
+
+    (async () => {
+      try {
+        await dispatch(fetchPokemons()).unwrap()
+      } catch (e) {
+        alert('포켓몬 정보를 가져오는데 실패했어요.')
+      }
+    })()
+  }, [dispatch, pokemons])
+
+  return (
+    <>
+      <List>
         {
           pokemons.results.map((pokemon, idx) => (
-            <PokeCard key={`${pokemon.name}_${idx}`} name={pokemon.name}/ >
+            <PokeCard key={`${pokemon.name}_${idx}`} name={pokemon.name} resource={pokemon.url}/>
           ))
         }
       </List>
-      <Loading ref = {infiniteRef}>
-            Loading...
-      </Loading>
-      </>
-    );
-};
-
-const Loading = styled.div`
-    display:flex;
-    justify-content: center;
-`
+      <div ref={infiniteRef}>로딩</div>
+    </>
+  );
+}
 
 const List = styled.ul`
-    list-style: none;
-    padding: 0;
-    margin 0 0 32px 0;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 20px;
+  list-style: none;
+  margin: 0 0 32px 0;
+  padding: 0;
+  display: flex;
+  gap: 20px;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
 `
 
-export default PokeCardList;
+export default PokeCardList
