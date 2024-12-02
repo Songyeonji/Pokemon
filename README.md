@@ -1,4 +1,4 @@
-# 포켓몬 도감 프로젝트
+# 포켓몬 도감 프로젝트(https://pokemon-psi-taupe.vercel.app/)
 
 포켓몬 도감 프로젝트는 [PokeAPI](https://pokeapi.co/)를 활용하여 포켓몬들의 정보를 보여주는 웹 애플리케이션입니다. 이 프로젝트는 React 및 Redux Toolkit을 사용하여 현대적인 웹 개발 기술을 적용하고, 비동기 API 호출, 상태 관리, 및 UI 렌더링에 대한 이해를 심화하기 위해 진행되었습니다.
 
